@@ -37,6 +37,7 @@ class Board:
         if self._board[0][0] == self._board[1][1] == self._board[2][2] or self._board[0][2] == self._board[1][1] == self._board[2][0]:
             if self._board[1][1] != '*':
                 return self._board[1][1]
+
         return None
 
 
@@ -69,7 +70,12 @@ class Game:
         self.p1_turn = True
 
     def start(self):
+        moves = 0
         while(True):
+            print(moves)
+            if moves == 9:
+                print("Its a tie!")
+                break
             if self.p1_turn:
                 move = self.p1.move(self.board)
                 self.board.make_move(move, self.p1.letter)
@@ -83,6 +89,7 @@ class Game:
                 print(f"Winner is {winner}")
                 self.board.draw()
                 break
+            moves += 1
 def main():
     game = Game()
     game.start()
