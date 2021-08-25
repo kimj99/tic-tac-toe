@@ -27,6 +27,8 @@ class Board:
             return True
         return False
 
+    def check_victory(self, board):
+        pass 
 
 class Player:
     def __init__(self, letter) -> None:
@@ -36,7 +38,11 @@ class Player:
         while(True):
             board.draw()
             spot = input(f"Pick a coordinate: ").split(" ")
-            spot = (int(spot[0]),int(spot[1]))
+            try:
+                spot = (int(spot[0]),int(spot[1]))
+            except ValueError:
+                print("Invalid input! ")
+                continue
             if board.get_spot(spot) == 0 or not board.is_valid_move(board.get_spot(spot)):
                 print("Invalid Move!")
                 print("Try Again")
