@@ -27,8 +27,18 @@ class Board:
             return True
         return False
 
-    def check_victory(self, board):
-        pass 
+    def check_victory(self):
+        for row in self._board:
+            if len(set(row)) == 1 and row[0] != '*':
+                return row[0]
+        for col in zip(*self._board):
+            if len(set(col)) == 1 and col[0] != '*':
+                return col[0]
+        if self._board[0][0] == self._board[1][1] == self._board[2][2] or self._board[0][2] == self._board[1][1] == self._board[2][0]:
+            if self._board[1][1] != '*':
+                return self._board[1][1]
+        return None
+
 
 class Player:
     def __init__(self, letter) -> None:
@@ -48,6 +58,9 @@ class Player:
                 print("Try Again")
                 continue
             return spot
+
+class AI(Player):
+    pass
 class Game:
     def __init__(self, p1: Player = Player('X'), p2: Player = Player('O'),board:Board = Board()) -> None:
         self.p1 = p1
@@ -65,6 +78,11 @@ class Game:
                 move = self.p2.move(self.board)
                 self.board.make_move(move, self.p2.letter)
                 self.p1_turn = True
+            winner = self.board.check_victory()
+            if winner:
+                print(f"Winner is {winner}")
+                self.board.draw()
+                break
 def main():
     game = Game()
     game.start()
