@@ -9,7 +9,8 @@ class Board:
         
     def get_spot(self, coordinate):
         x,y = coordinate
-        if x in range(len(self._board)) or y in range(len(self._board)):
+
+        if x < len(self._board) and y < len(self._board):
             return self._board[x][y]
         else:
             return 0
@@ -36,11 +37,10 @@ class Player:
             board.draw()
             spot = input(f"Pick a coordinate: ").split(" ")
             spot = (int(spot[0]),int(spot[1]))
-            if board.get_spot(spot) == 0:
-                if not board.is_valid_move(board.get_spot(spot)):
-                    print("Invalid Move!")
-                    print("Try Again")
-                    continue
+            if board.get_spot(spot) == 0 or not board.is_valid_move(board.get_spot(spot)):
+                print("Invalid Move!")
+                print("Try Again")
+                continue
             return spot
 class Game:
     def __init__(self, p1: Player = Player('X'), p2: Player = Player('O'),board:Board = Board()) -> None:
