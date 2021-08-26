@@ -63,8 +63,9 @@ class Board:
                     moves.append((i,j))
         return moves
 class Player:
-    def __init__(self, letter) -> None:
+    def __init__(self, letter,other_letter) -> None:
         self.letter = letter
+        self.other_letter = other_letter
 
     def move(self, board):
         while(True):
@@ -82,8 +83,8 @@ class Player:
             return spot
 
 class AI(Player):
-    def __init__(self, letter) -> None:
-        super().__init__(letter)
+    def __init__(self, letter, other_letter) -> None:
+        super().__init__(letter,other_letter)
     
     def move(self, board):
         board.draw()
@@ -93,6 +94,7 @@ class AI(Player):
         for i,j in board.available_moves():
             board.make_move((i,j),self.letter)
             score = self.minmax(board,True)
+
             board.reset_move((i,j))
             if score > best_score:
                 best_score = score
@@ -118,7 +120,7 @@ class AI(Player):
         else:
             min_eval = math.inf
             for move in board.available_moves():
-                board.make_move(move,'X')
+                board.make_move(move,self.other_letter)
                 eval = self.minmax(board, True)
                 board.reset_move(move)
                 min_eval = min(min_eval, eval)
@@ -127,9 +129,9 @@ class AI(Player):
 
 
 class Game:
-    def __init__(self, p1: Player = Player('X'), p2: Player = Player('O'),board:Board = Board()) -> None:
-        self.p1 = Player('X')
-        self.p2 = AI('O')
+    def __init__(self,board:Board = Board()) -> None:
+        self.p1 = AI('X','O')
+        self.p2 = AI('O','X')
         self.board = board
         self.p1_turn = True
 
