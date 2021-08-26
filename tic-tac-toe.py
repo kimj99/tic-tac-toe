@@ -3,6 +3,7 @@ class Board:
     def __init__(self) -> None:
         self._board = [['*' for _ in range(3)] for _ in range(3)]
 
+
     def draw(self):
         for row in self._board:
             print(row)
@@ -15,17 +16,23 @@ class Board:
         else:
             return 0
     
-    def is_valid_move(self, move):
-        if move == '*':
+    def is_valid_move(self, spot):
+        if spot == '*':
             return True 
         return False
 
     def make_move(self, move, letter):
+        x,y = move
         spot = self.get_spot(move)
         if self.is_valid_move(spot):
-            self._board[move[0]][move[1]] = letter
+            self._board[x][y] = letter
             return True
         return False
+
+    def reset_move(self, move):
+        x,y = move
+        self._board[x][y] = '*'
+        return True
 
     def check_victory(self):
         for row in self._board:
@@ -39,15 +46,22 @@ class Board:
                 return self._board[1][1]
 
         return None
+
     def num_spaces(self):
-        count = 0
+        count = 9
         for i in range(3):
             for j in range(3):
                 if self._board[i][j] == '*':
-                    count += 1
+                    count -= 1
         return count
 
-
+    def available_moves(self):
+        moves = []
+        for i in range(3):
+            for j in range(3):
+                if self._board[i][j] == '*':
+                    moves.append((i,j))
+        return moves
 class Player:
     def __init__(self, letter) -> None:
         self.letter = letter
@@ -72,22 +86,49 @@ class AI(Player):
         super().__init__(letter)
     
     def move(self, board):
-        pass
+        board.draw()
+        print("AI Move")
+        best_score = -math.inf
+
+        for i,j in board.available_moves():
+            board.make_move((i,j),self.letter)
+            score = self.minmax(board,True)
+            board.reset_move((i,j))
+            if score > best_score:
+                best_score = score
+                best_spot = (i,j)
+        return best_spot
+
+
     def minmax(self, board, max_player):
         winner = board.check_victory()
         if winner:
-            if winner == 'O':
+            if winner != self.letter:
                 return -1 * board.num_spaces() + 1
             else:
                 return 1 * board.num_spaces() + 1
         if max_player:
             max_eval = -math.inf
+            for move in board.available_moves():
+                board.make_move(move,self.letter)
+                eval = self.minmax(board, False)
+                board.reset_move(move)
+                max_eval = max(max_eval,eval)
+            return max_eval
+        else:
+            min_eval = math.inf
+            for move in board.available_moves():
+                board.make_move(move,'X')
+                eval = self.minmax(board, True)
+                board.reset_move(move)
+                min_eval = min(min_eval, eval)
+            return min_eval
 
 
 
 class Game:
     def __init__(self, p1: Player = Player('X'), p2: Player = Player('O'),board:Board = Board()) -> None:
-        self.p1 = p1
+        self.p1 = Player('X')
         self.p2 = AI('O')
         self.board = board
         self.p1_turn = True
@@ -95,7 +136,6 @@ class Game:
     def start(self):
         moves = 0
         while(True):
-            print(moves)
             if moves == 9:
                 print("Its a tie!")
                 break
