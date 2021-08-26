@@ -1,4 +1,4 @@
-
+import math
 class Board:
     def __init__(self) -> None:
         self._board = [['*' for _ in range(3)] for _ in range(3)]
@@ -39,12 +39,19 @@ class Board:
                 return self._board[1][1]
 
         return None
+    def num_spaces(self):
+        count = 0
+        for i in range(3):
+            for j in range(3):
+                if self._board[i][j] == '*':
+                    count += 1
+        return count
 
 
 class Player:
     def __init__(self, letter) -> None:
         self.letter = letter
-    
+
     def move(self, board):
         while(True):
             board.draw()
@@ -61,11 +68,27 @@ class Player:
             return spot
 
 class AI(Player):
-    pass
+    def __init__(self, letter) -> None:
+        super().__init__(letter)
+    
+    def move(self, board):
+        pass
+    def minmax(self, board, max_player):
+        winner = board.check_victory()
+        if winner:
+            if winner == 'O':
+                return -1 * board.num_spaces() + 1
+            else:
+                return 1 * board.num_spaces() + 1
+        if max_player:
+            max_eval = -math.inf
+
+
+
 class Game:
     def __init__(self, p1: Player = Player('X'), p2: Player = Player('O'),board:Board = Board()) -> None:
         self.p1 = p1
-        self.p2 = p2
+        self.p2 = AI('O')
         self.board = board
         self.p1_turn = True
 
