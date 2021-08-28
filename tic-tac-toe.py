@@ -1,7 +1,14 @@
 import math
+from enum import Enum
+
+class Types(Enum):
+    X: 1
+    O: 2
+
 class Board:
     def __init__(self) -> None:
-        self._board = [['*' for _ in range(3)] for _ in range(3)]
+        #self._board = [['*' for _ in range(3)] for _ in range(3)]
+        self._board = [['X','*','O'],['*','X','X'],['*','*','O']]
 
 
     def draw(self):
@@ -44,7 +51,8 @@ class Board:
         if self._board[0][0] == self._board[1][1] == self._board[2][2] or self._board[0][2] == self._board[1][1] == self._board[2][0]:
             if self._board[1][1] != '*':
                 return self._board[1][1]
-
+        if self.num_spaces() == 0:
+            return 0
         return None
 
     def num_spaces(self):
@@ -88,32 +96,40 @@ class AI(Player):
     
     def move(self, board):
         board.draw()
-        print("AI Move")
+        print("AI Move: ",self.letter)
         best_score = -math.inf
 
         for i,j in board.available_moves():
             board.make_move((i,j),self.letter)
             score = self.minmax(board,True)
-
             board.reset_move((i,j))
             if score > best_score:
                 best_score = score
                 best_spot = (i,j)
+        print(f"chosen spot: {best_spot} with a score of {best_score}")
         return best_spot
 
 
     def minmax(self, board, max_player):
         winner = board.check_victory()
-        if winner:
-            if winner != self.letter:
-                return -1 * board.num_spaces() + 1
-            else:
-                return 1 * board.num_spaces() + 1
+        print(winner)
+        board.draw()
+        if winner: 
+            if winner == self.letter:
+                return 1 * board.num_spaces() + 10
+            if winner == self.other_letter:
+                return -1 * board.num_spaces() + 10
+            if winner == 0:
+                return 0
+        
         if max_player:
             max_eval = -math.inf
             for move in board.available_moves():
                 board.make_move(move,self.letter)
                 eval = self.minmax(board, False)
+                board.draw()
+                print(f"eval for max: {eval}")
+                print("\n")
                 board.reset_move(move)
                 max_eval = max(max_eval,eval)
             return max_eval
@@ -130,8 +146,8 @@ class AI(Player):
 
 class Game:
     def __init__(self,board:Board = Board()) -> None:
-        self.p1 = AI('X','O')
-        self.p2 = AI('O','X')
+        self.p2 = Player('X','O')
+        self.p1 = AI('O','X')
         self.board = board
         self.p1_turn = True
 
