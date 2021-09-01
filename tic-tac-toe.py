@@ -72,8 +72,7 @@ class Board:
         return moves
     
     def get_current_state(self):
-        copy = Board()
-        copy = self._board
+        copy = self
         
         return copy
 class Player:
@@ -105,7 +104,8 @@ class AI(Player):
         print("AI Move: ",self.letter)
         best_score = -math.inf
         possible_state = board.get_current_state()
-        for i,j in board.available_moves():
+
+        for i,j in possible_state.available_moves():
             possible_state.make_move((i,j),self.letter)
             score = self.minmax(possible_state,True)
             possible_state.reset_move((i,j))
