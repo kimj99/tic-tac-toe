@@ -70,6 +70,12 @@ class Board:
                 if self._board[i][j] == '*':
                     moves.append((i,j))
         return moves
+    
+    def get_current_state(self):
+        copy = Board()
+        copy = self._board
+        
+        return copy
 class Player:
     def __init__(self, letter,other_letter) -> None:
         self.letter = letter
@@ -98,11 +104,11 @@ class AI(Player):
         board.draw()
         print("AI Move: ",self.letter)
         best_score = -math.inf
-
+        possible_state = board.get_current_state()
         for i,j in board.available_moves():
-            board.make_move((i,j),self.letter)
-            score = self.minmax(board,True)
-            board.reset_move((i,j))
+            possible_state.make_move((i,j),self.letter)
+            score = self.minmax(possible_state,True)
+            possible_state.reset_move((i,j))
             if score > best_score:
                 best_score = score
                 best_spot = (i,j)
