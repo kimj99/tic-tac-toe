@@ -2,8 +2,9 @@ import math
 from enum import Enum
 
 class Types(Enum):
-    X: 1
-    O: 2
+    X = 1
+    O = 2
+
 
 class Board:
     def __init__(self) -> None:
@@ -32,7 +33,7 @@ class Board:
         x,y = move
         spot = self.get_spot(move)
         if self.is_valid_move(spot):
-            self._board[x][y] = letter
+            self._board[x][y] = letter.name
             return True
         return False
 
@@ -76,9 +77,8 @@ class Board:
         
         return copy
 class Player:
-    def __init__(self, letter,other_letter) -> None:
+    def __init__(self, letter: Types) -> None:
         self.letter = letter
-        self.other_letter = other_letter
 
     def move(self, board):
         while(True):
@@ -97,7 +97,8 @@ class Player:
 
 class AI(Player):
     def __init__(self, letter, other_letter) -> None:
-        super().__init__(letter,other_letter)
+        super().__init__(letter)
+        self.other_letter = other_letter
     
     def move(self, board):
         board.draw()
@@ -118,7 +119,7 @@ class AI(Player):
 
     def minmax(self, board, max_player):
         winner = board.check_victory()
-        print(winner)
+
         board.draw()
         if winner: 
             if winner == self.letter:
@@ -134,8 +135,7 @@ class AI(Player):
                 board.make_move(move,self.letter)
                 eval = self.minmax(board, False)
                 board.draw()
-                print(f"eval for max: {eval}")
-                print("\n")
+
                 board.reset_move(move)
                 max_eval = max(max_eval,eval)
             return max_eval
@@ -152,8 +152,8 @@ class AI(Player):
 
 class Game:
     def __init__(self,board:Board = Board()) -> None:
-        self.p2 = Player('X','O')
-        self.p1 = AI('O','X')
+        self.p2 = Player(Types.O)
+        self.p1 = AI(Types.X, self.p2.letter)
         self.board = board
         self.p1_turn = True
 
@@ -177,6 +177,8 @@ class Game:
                 self.board.draw()
                 break
             moves += 1
+
+            
 def main():
     game = Game()
     game.start()
