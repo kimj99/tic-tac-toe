@@ -8,8 +8,8 @@ class Types(Enum):
 
 class Board:
     def __init__(self) -> None:
-        #self._board = [['*' for _ in range(3)] for _ in range(3)]
-        self._board = [['X','*','O'],['*','X','X'],['*','*','O']]
+        self._board = [['*' for _ in range(3] for _ in range(3)]
+        #self._board = [['X','*','O'],['*','X','X'],['*','*','O']]
 
 
     def draw(self):
